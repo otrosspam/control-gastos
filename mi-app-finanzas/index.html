@@ -8,6 +8,7 @@
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <link rel="manifest" href="./manifest.json">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icons/android-chrome-192x192.png">
     <link rel="apple-touch-icon" href="./icons/android-chrome-192x192.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>💰 FinanzasApp</title>
@@ -65,7 +66,10 @@
             width: 42px; height: 42px;
             background: linear-gradient(135deg, var(--income), var(--accent));
             border-radius: 12px; display: flex; align-items: center;
-            justify-content: center; font-size: 22px;
+            justify-content: center; overflow: hidden;
+        }
+        .sidebar-brand .logo img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
         }
         .sidebar-brand h2 { color: white; font-size: 20px; font-weight: 700; }
         .sidebar-brand span { color: var(--accent-light); font-size: 11px; display: block; }
@@ -485,7 +489,7 @@
 
 <nav class="sidebar" id="sidebar">
     <div class="sidebar-brand">
-        <div class="logo">💰</div>
+        <div class="logo"><img src="./icons/android-chrome-192x192.png" alt="FinanzasApp"></div>
         <div><h2>FinanzasApp</h2><span>Control Integral</span></div>
     </div>
     <div class="nav-section">
@@ -799,10 +803,7 @@
                 <div class="form-group">
                     <label>Moneda</label>
                     <select class="form-control" id="setting-currency" onchange="saveSettings()">
-                        <option value="$">$ (Dólar/Peso)</option>
-                        <option value="€">€ (Euro)</option>
-                        <option value="£">£ (Libra)</option>
-                        <option value="¥">¥ (Yen)</option>
+                        <option value="$">$</option>
                     </select>
                 </div>
                 <div class="form-group">
