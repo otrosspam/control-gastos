@@ -1025,7 +1025,8 @@ const METHOD_ICONS = { efectivo: '💵', tarjeta: '💳', transferencia: '🏦',
 let state = {
     expenses: [], incomes: [], budgets: [], payments: [], notifications: [],
     settings: { currency: '$', globalBudget: 5000, notifications: true, budgetAlerts: true, darkMode: false },
-    currentMonth: new Date().getMonth(), currentYear: new Date().getFullYear()
+    currentMonth: new Date().getMonth(), currentYear: new Date().getFullYear(),
+    demoInitialized: false
 };
 
 // ==================== PERSISTENCE ====================
@@ -1043,7 +1044,8 @@ function loadState() {
             budgets: Array.isArray(saved.budgets) ? saved.budgets : [],
             payments: Array.isArray(saved.payments) ? saved.payments : [],
             notifications: Array.isArray(saved.notifications) ? saved.notifications : [],
-            settings: { ...state.settings, ...(saved.settings || {}) }
+            settings: { ...state.settings, ...(saved.settings || {}) },
+            demoInitialized: Boolean(saved.demoInitialized)
         };
     } catch (error) {
         console.warn('Estado local inválido. Se reiniciará la app.', error);
@@ -1069,7 +1071,7 @@ function init() {
 }
 
 function initSampleData() {
-    if (state.incomes.length === 0 && state.expenses.length === 0) {
+    if (!state.demoInitialized && state.incomes.length === 0 && state.expenses.length === 0) {
         const now = new Date(); const y = now.getFullYear(); const m = now.getMonth();
         const ms = String(m + 1).padStart(2, '0');
 
@@ -1109,6 +1111,7 @@ function initSampleData() {
         state.notifications = [
             { id: genId(), type: 'info', title: 'Bienvenido', message: 'Registra tus ingresos y gastos para comenzar', time: new Date().toLocaleString('es-ES'), read: false },
         ];
+        state.demoInitialized = true;
         saveState();
     }
 }
@@ -1628,7 +1631,19 @@ function importData(event) {
     reader.onload = e => { try { const d = JSON.parse(e.target.result); if (d.incomes !== undefined) { state = { ...state, ...d }; saveState(); renderAll(); showToast('success', 'Datos importados'); } else showToast('error', 'Formato inválido'); } catch { showToast('error', 'Error al leer'); } };
     reader.readAsText(file); event.target.value = '';
 }
-function clearAllData() { if (!confirm('⚠️ ¿Borrar TODOS los datos?')) return; if (!confirm('No se puede deshacer. ¿Continuar?')) return; localStorage.removeItem('finanzasapp_state'); state.incomes=[]; state.expenses=[]; state.budgets=[]; state.payments=[]; state.notifications=[]; saveState(); renderAll(); showToast('info', 'Datos eliminados'); }
+function clearAllData() {
+    if (!confirm('⚠️ ¿Borrar TODOS los datos?')) return;
+    if (!confirm('No se puede deshacer. ¿Continuar?')) return;
+    state.incomes = [];
+    state.expenses = [];
+    state.budgets = [];
+    state.payments = [];
+    state.notifications = [];
+    state.demoInitialized = true;
+    saveState();
+    renderAll();
+    showToast('info', 'Datos eliminados');
+}
 function downloadFile(content, filename, type) { const blob = new Blob([content], { type }), url = URL.createObjectURL(blob), a = document.createElement('a'); a.href = url; a.download = filename; a.click(); URL.revokeObjectURL(url); }
 
 // ==================== TOAST ====================
